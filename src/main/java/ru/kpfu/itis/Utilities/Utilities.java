@@ -24,7 +24,7 @@ public class Utilities {
 
 
     /**
-     * Your device mixer
+     * Your mic device mixer
      * default 1
      */
 
@@ -41,7 +41,7 @@ public class Utilities {
      * default 0
      */
 
-    private static final int PLAY_MIXER_INFO = 0; //а здесь микрофон если он у тебя есть конечно)
+    private static final int PLAY_MIXER_INFO = 0; //а здесь динамики если он у тебя есть конечно)
 
     public static Mixer.Info getPlayMixerInfo(){
 
