@@ -105,8 +105,6 @@ public class UserInterface extends JFrame {
 
 
             try {
-                System.out.println("values:  \n");
-                SpeechKit.getValues().forEach(System.out::println);
                 audioPlay = new AudioPlay(audioCapture.getAudioBytes());
 
             } catch (LineUnavailableException e1) {

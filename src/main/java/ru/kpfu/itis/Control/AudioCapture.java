@@ -49,9 +49,6 @@ public class AudioCapture implements Runnable {
         isCapture = capture;
     }
 
-    public boolean isCapture() {
-        return isCapture;
-    }
 
     private void writeData(){
         int count = targetDataLine.read(buffer,0,buffer.length);
