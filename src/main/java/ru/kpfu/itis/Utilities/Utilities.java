@@ -28,7 +28,7 @@ public class Utilities {
      * default 1
      */
 
-    private static final int RECORD_MIXER_INFO = 1;
+    private static final int RECORD_MIXER_INFO = 1;  //в общем здесь ставь число от 0 до бесконечности пока не заработает play
 
     public static Mixer.Info getRecordMixerInfo(){
 
@@ -41,7 +41,7 @@ public class Utilities {
      * default 0
      */
 
-    private static final int PLAY_MIXER_INFO = 0;
+    private static final int PLAY_MIXER_INFO = 0; //а здесь микрофон если он у тебя есть конечно)
 
     public static Mixer.Info getPlayMixerInfo(){
 
