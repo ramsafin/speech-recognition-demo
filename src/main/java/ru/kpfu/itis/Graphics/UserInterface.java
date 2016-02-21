@@ -325,9 +325,10 @@ public class UserInterface extends JFrame {
     }
 
     private String formatText(ArrayList<String> text){
+        int i = 1;
         StringBuilder s = new StringBuilder();
         for (String t : text){
-            s.append(t).append("\n");
+            s.append(i++).append(") ").append(t).append("\n");
         }
         return s.toString();
     }
