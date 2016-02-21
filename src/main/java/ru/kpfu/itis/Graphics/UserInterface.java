@@ -27,6 +27,8 @@ public class UserInterface extends JFrame {
     //textAudioPanel
     private JButton listenBtn;
     private JTextArea textArea;
+    private JComboBox<String> speakerBox;
+    private JComboBox<String> emotionBox;
 
 
     //record panel
@@ -39,18 +41,18 @@ public class UserInterface extends JFrame {
     private AudioPlay audioPlay;
     private AudioSave audioSave;
 
+    //recognition
+    private JButton recognizeBtn;
+
 
     //setting panel
     private JPanel micPanel;
     private JPanel audioPanel;
-
     private JComboBox<Mixer.Info> micInfo;
     private JComboBox<Mixer.Info> audioInfo;
+
+
     private JPanel panel;
-
-    //recognition
-    private JButton recognizeBtn;
-
 
 
     public UserInterface() throws LineUnavailableException {
@@ -59,7 +61,7 @@ public class UserInterface extends JFrame {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setResizable(false);
-        this.setBounds(500,300,350,200);
+        this.setBounds(500,300,350,240);
 
         pane = new JTabbedPane();
 
@@ -148,6 +150,9 @@ public class UserInterface extends JFrame {
     private void initTextPanel() {
 
         listenBtn = new JButton("listen");
+        listenBtn.addActionListener(getListenListener());
+
+
         textArea = new JTextArea(5,40);
         textArea.setEnabled(true);
         textArea.setVisible(true);
@@ -156,12 +161,26 @@ public class UserInterface extends JFrame {
         textArea.setWrapStyleWord(true);
         textArea.setAutoscrolls(true);
         textArea.setEditable(true);
-
         textAudioPanel = new JPanel(new BorderLayout(20,20));
-        textAudioPanel.add(listenBtn,BorderLayout.SOUTH);
-        textAudioPanel.add(textArea,BorderLayout.CENTER);
 
-        listenBtn.addActionListener(getListenListener());
+        JPanel p = new JPanel(new BorderLayout(20,5));
+
+        speakerBox = new JComboBox<>(SpeechKit.getSpeakers());
+        emotionBox = new JComboBox<>(SpeechKit.getEmotions());
+
+        p.add(textArea,BorderLayout.CENTER);
+
+        JPanel p2 = new JPanel();
+        p2.setLayout(new BoxLayout(p2,BoxLayout.Y_AXIS));
+
+        p2.add(speakerBox);
+        p2.add(emotionBox);
+
+        p.add(p2,BorderLayout.SOUTH);
+
+        textAudioPanel.add(listenBtn,BorderLayout.SOUTH);
+        textAudioPanel.add(p,BorderLayout.CENTER);
+
 
         pane.addTab("listen text",textAudioPanel);
     }
@@ -170,7 +189,9 @@ public class UserInterface extends JFrame {
 
     private ActionListener getListenListener(){
         return e->{
+
             String text = textArea.getText();
+
             if (text == null || text.equals("")){
                 JOptionPane.showMessageDialog(this,"too few symbols in text");
                 return;
@@ -178,6 +199,13 @@ public class UserInterface extends JFrame {
 
             try {
 
+                //setting up emotion
+                SpeechKit.setEmotion((String) emotionBox.getSelectedItem());
+
+                //setting up speaker
+                SpeechKit.setSpeaker((String) speakerBox.getSelectedItem());
+
+                //waiting for the audio bytes
                 byte [] bytes = SpeechKit.sendGET(text);
 
                 new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());

@@ -35,7 +35,7 @@ public class SpeechKit {
      * Sends post to the yandex and it will return xml with recognition results
      * @param bytes - audio bytes for sending
      * @return StringBuilder - xml with results
-     * @throws IOException
+     * @throws RecognitionSpeechException
      */
 
     public static ArrayList<String> sendPOST(byte[] bytes) throws RecognitionSpeechException {
@@ -89,16 +89,36 @@ public class SpeechKit {
      * Then it will be saved into .wav file
      */
 
-    private static String speaker = "zahar"; // omazh, zahar , ermil
+    private static String speaker = "zahar"; // omazh, zahar , ermil, jane | zahar by default
     private static String format = "wav";   //mp3
     private static String emotion = "evil"; //neutral, evil, mixed
     private static String robot = "false";  //true
     private static String textRecognitionURI = "https://tts.voicetech.yandex.net/generate?";
 
 
+    public static void setSpeaker(String speaker) {
+        SpeechKit.speaker = speaker;
+    }
+
+    public static String[] getSpeakers() {
+        return new String[]{"zahar","omazh","ermil","jane"};
+    }
+
+    public static String[] getEmotions() {
+        return new String[]{"neutral","mixed","evil","good"};
+    }
+
+    public static void setEmotion(String emotion) {
+        SpeechKit.emotion = emotion;
+    }
+
     public static byte[] sendGET(String textToSend) throws TextRecognitionException {
 
         try{
+
+            System.out.println(emotion);
+            System.out.println(speaker);
+
             String text = URLEncoder.encode(textToSend,"UTF8");
 
             String params = "text=\""+text+"\"&format="+format+"&speaker="+speaker+"&key="+KEY+"&emotion="+emotion+"&robot="+robot;
