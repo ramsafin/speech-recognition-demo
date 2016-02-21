@@ -16,12 +16,11 @@ public class AudioCapture implements Runnable {
     private ByteArrayOutputStream out; //Thread safe stream
 
 
-    public AudioCapture() throws LineUnavailableException {
+    public AudioCapture(Mixer.Info info) throws LineUnavailableException {
 
         audioFormat = Utilities.getAudioFormat();
         isCapture = true;
-        Mixer.Info mixerInfo = Utilities.getRecordMixerInfo();
-        targetDataLine = AudioSystem.getTargetDataLine(audioFormat,mixerInfo);
+        targetDataLine = AudioSystem.getTargetDataLine(audioFormat, info);
         targetDataLine.open(audioFormat);
         targetDataLine.start();
 

@@ -6,13 +6,15 @@ import ru.kpfu.itis.Control.AudioSave;
 import ru.kpfu.itis.Exceptions.IllegalFilePathException;
 import ru.kpfu.itis.Exceptions.TextRecognitionException;
 import ru.kpfu.itis.SpeechRecogmition.SpeechKit;
+import ru.kpfu.itis.Utilities.Utilities;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.*;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 public class UserInterface extends JFrame {
 
@@ -37,6 +39,17 @@ public class UserInterface extends JFrame {
     private AudioSave audioSave;
 
 
+    //setting panel
+    private JPanel micPanel;
+    private JPanel audioPanel;
+
+    private JComboBox<Mixer.Info> micInfo;
+    private JComboBox<Mixer.Info> audioInfo;
+    private JPanel panel;
+
+
+
+
     public UserInterface() throws LineUnavailableException {
 
         super("Audio panel");
@@ -47,12 +60,87 @@ public class UserInterface extends JFrame {
 
         pane = new JTabbedPane();
 
+        initSettingPanel();
         initRecordPanel();
         initTextPanel();
 
         this.add(pane);
         this.setVisible(true);
     }
+
+
+    private void initSettingPanel(){
+
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+
+        initMic();
+        initAudio();
+
+        pane.addTab("Setting",panel);
+    }
+
+
+
+    private void initAudio() {
+
+        audioPanel = new JPanel(new BorderLayout(50,90));
+
+        audioPanel.setBorder(new TitledBorder("Audio device : "));
+
+        audioInfo = new JComboBox<>(getMixerInfo(SourceDataLine.class));
+
+        audioPanel.add(audioInfo,BorderLayout.CENTER);
+
+        panel.add(audioPanel);
+
+    }
+
+    private void initMic() {
+
+        micPanel = new JPanel(new BorderLayout(50,90));
+
+        micPanel.setBorder(new TitledBorder("Microphone device : "));
+
+        micInfo = new JComboBox<>(getMixerInfo(TargetDataLine.class));
+
+        micPanel.add(micInfo,BorderLayout.CENTER);
+
+        panel.add(micPanel);
+    }
+
+
+    private Mixer.Info[] toMixerArray(ArrayList<Mixer> arrayList){
+
+        Mixer.Info [] mixers = new Mixer.Info[arrayList.size()];
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            mixers[i] = arrayList.get(i).getMixerInfo();
+        }
+
+        return mixers;
+    }
+
+
+    private Mixer.Info[] getMixerInfo(Class<?> c){
+
+        Mixer.Info infos[] = AudioSystem.getMixerInfo();
+
+        DataLine.Info lineInfo = new DataLine.Info(c, Utilities.getAudioFormat());
+
+        ArrayList<Mixer> arrayList = new ArrayList<>(3);
+
+        for (Mixer.Info i : infos){
+            Mixer mixer = AudioSystem.getMixer(i);
+            if (mixer.isLineSupported(lineInfo)){
+                arrayList.add(mixer);
+            }
+        }
+
+        return toMixerArray(arrayList);
+    }
+
+
 
     private void initTextPanel() {
 
@@ -78,8 +166,11 @@ public class UserInterface extends JFrame {
             }
 
             try {
+
                 byte [] bytes = SpeechKit.sendGET(text);
-                AudioPlay play = new AudioPlay(bytes);
+
+                new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());
+
             } catch (TextRecognitionException | LineUnavailableException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage());
                 e1.printStackTrace();
@@ -88,6 +179,7 @@ public class UserInterface extends JFrame {
 
         pane.addTab("listen text",textAudioPanel);
     }
+
 
 
     private void initRecordPanel(){
@@ -132,7 +224,8 @@ public class UserInterface extends JFrame {
             saveBtn.setEnabled(false);
 
             try {
-                audioCapture = new AudioCapture();
+                System.out.println(micInfo.getSelectedItem().toString());
+                audioCapture = new AudioCapture((Mixer.Info) micInfo.getSelectedItem());
             } catch (LineUnavailableException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage());
                 e1.printStackTrace();
@@ -146,7 +239,7 @@ public class UserInterface extends JFrame {
         return e->{
 
             try {
-                audioPlay = new AudioPlay(audioCapture.getAudioBytes());
+                audioPlay = new AudioPlay(audioCapture.getAudioBytes(), (Mixer.Info) audioInfo.getSelectedItem());
 
             } catch (LineUnavailableException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage());

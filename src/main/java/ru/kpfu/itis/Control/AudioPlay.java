@@ -18,7 +18,7 @@ public class AudioPlay implements Runnable {
     private SourceDataLine sourceDataLine;
 
 
-    public AudioPlay(byte [] audioBytes) throws LineUnavailableException {
+    public AudioPlay(byte [] audioBytes, Mixer.Info info) throws LineUnavailableException {
 
         audioFormat = Utilities.getAudioFormat();
 
@@ -26,9 +26,7 @@ public class AudioPlay implements Runnable {
 
         audioInputStream = new AudioInputStream(new ByteArrayInputStream(audioBytes),audioFormat,length);
 
-        Mixer.Info mixerInfo = Utilities.getPlayMixerInfo();
-
-        sourceDataLine = AudioSystem.getSourceDataLine(audioFormat,mixerInfo);
+        sourceDataLine = AudioSystem.getSourceDataLine(audioFormat,info);
 
         sourceDataLine.open(audioFormat);
 
