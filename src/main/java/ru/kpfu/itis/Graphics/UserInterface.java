@@ -65,7 +65,7 @@ public class UserInterface extends JFrame {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setResizable(false);
-        this.setBounds(500,300,350,240);
+        this.setBounds(500,300,400,240);
 
         pane = new JTabbedPane();
 
@@ -263,7 +263,6 @@ public class UserInterface extends JFrame {
         recognizeBtn = new JButton("recognize");
 
 
-
         startBtn.setEnabled(true);
         stopBtn.setEnabled(false);
         playBtn.setEnabled(false);
@@ -298,6 +297,11 @@ public class UserInterface extends JFrame {
 
     private ActionListener getRecognizeListener(){
         return e->{
+
+            if (audioCapture.isCapture()){
+                return;
+            }
+
             if (audioCapture == null){
                 JOptionPane.showMessageDialog(this,"You should record voice at first");
                 return;

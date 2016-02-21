@@ -104,21 +104,7 @@ public class SpeechKit {
     private static String textRecognitionURI = "https://tts.voicetech.yandex.net/generate?";
 
 
-    public static void setSpeaker(String speaker) {
-        SpeechKit.speaker = speaker;
-    }
 
-    public static String[] getSpeakers() {
-        return new String[]{"zahar","omazh","ermil","jane"};
-    }
-
-    public static String[] getEmotions() {
-        return new String[]{"neutral","mixed","evil","good"};
-    }
-
-    public static void setEmotion(String emotion) {
-        SpeechKit.emotion = emotion;
-    }
 
     public static byte[] sendGET(String textToSend) throws TextRecognitionException {
 
@@ -156,7 +142,28 @@ public class SpeechKit {
         }
     }
 
-    private static String expression = "//recognitionResults";
+
+
+    public static void setSpeaker(String speaker) {
+        SpeechKit.speaker = speaker;
+    }
+
+    public static String[] getSpeakers() {
+        return new String[]{"zahar","omazh","ermil","jane"};
+    }
+
+    public static String[] getEmotions() {
+        return new String[]{"neutral","mixed","evil","good"};
+    }
+
+    public static void setEmotion(String emotion) {
+        SpeechKit.emotion = emotion;
+    }
+
+
+
+
+    private static String expression = "//recognitionResults/variant";
 
     private static ArrayList<String> getInternalXMLText(StringBuilder xml) throws RecognitionSpeechException {
 
@@ -174,6 +181,7 @@ public class SpeechKit {
             XPathExpression expression = xPath.compile(SpeechKit.expression);
 
             NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 arrayList.add(nodeList.item(i).getTextContent());
