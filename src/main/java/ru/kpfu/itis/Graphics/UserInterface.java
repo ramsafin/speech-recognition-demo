@@ -57,7 +57,7 @@ public class UserInterface extends JFrame {
 
         super("Audio panel");
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setBounds(500,300,350,200);
 
@@ -161,7 +161,15 @@ public class UserInterface extends JFrame {
         textAudioPanel.add(listenBtn,BorderLayout.SOUTH);
         textAudioPanel.add(textArea,BorderLayout.CENTER);
 
-        listenBtn.addActionListener(e->{
+        listenBtn.addActionListener(getListenListener());
+
+        pane.addTab("listen text",textAudioPanel);
+    }
+
+
+
+    private ActionListener getListenListener(){
+        return e->{
             String text = textArea.getText();
             if (text == null || text.equals("")){
                 JOptionPane.showMessageDialog(this,"too few symbols in text");
@@ -178,9 +186,7 @@ public class UserInterface extends JFrame {
                 JOptionPane.showMessageDialog(this,e1.getMessage());
                 e1.printStackTrace();
             }
-        });
-
-        pane.addTab("listen text",textAudioPanel);
+        };
     }
 
 
@@ -210,7 +216,25 @@ public class UserInterface extends JFrame {
         playBtn.addActionListener(getPlayListener());
         saveBtn.addActionListener(getSaveListener());
 
-        recognizeBtn.addActionListener(e->{
+        recognizeBtn.addActionListener(getRecognizeListener());
+
+
+        recordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,20));
+
+        recordPanel.add(startBtn);
+        recordPanel.add(stopBtn);
+        recordPanel.add(playBtn);
+        recordPanel.add(saveBtn);
+        recordPanel.add(recognizeBtn);
+
+        pane.addTab("Recording - Saving - Recognition",recordPanel);
+    }
+
+
+
+
+    private ActionListener getRecognizeListener(){
+        return e->{
             byte[] data = audioCapture.getAudioBytes();
             if (data.length > 0){
 
@@ -226,18 +250,7 @@ public class UserInterface extends JFrame {
             }else {
                 JOptionPane.showMessageDialog(this,"You should record some audio before sending!");
             }
-        });
-
-
-        recordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,20));
-
-        recordPanel.add(startBtn);
-        recordPanel.add(stopBtn);
-        recordPanel.add(playBtn);
-        recordPanel.add(saveBtn);
-        recordPanel.add(recognizeBtn);
-
-        pane.addTab("Recording - Saving - Recognition",recordPanel);
+        };
     }
 
 
