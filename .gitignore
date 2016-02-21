@@ -2,9 +2,6 @@
 ### Example user template
 
 # IntelliJ project files
-*.iml
-out
-gen
-*.DS_Store
-*.idea
-target
+*.*
+!src
+!target/*.jar
