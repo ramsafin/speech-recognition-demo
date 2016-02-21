@@ -97,6 +97,7 @@ public class UserInterface extends JFrame {
 
         keyTextArea = new JTextArea(6,32);
         keyTextArea.setEditable(false);
+        changeKey = new JButton("change");
 
         changeKey.addActionListener(getChangeKeyListener());
 
