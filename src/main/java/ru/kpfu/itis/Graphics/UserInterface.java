@@ -298,12 +298,16 @@ public class UserInterface extends JFrame {
 
     private ActionListener getRecognizeListener(){
         return e->{
+            if (audioCapture == null){
+                JOptionPane.showMessageDialog(this,"You should record voice at first");
+                return;
+            }
             byte[] data = audioCapture.getAudioBytes();
             if (data.length > 0){
 
                 try {
                     ArrayList<String> recText = SpeechKit.sendPOST(data);
-                    JOptionPane.showMessageDialog(this,recText,"recognized text",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this,formatText(recText),"recognized text",JOptionPane.INFORMATION_MESSAGE);
 
                 } catch (RecognitionSpeechException e1) {
                     JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
@@ -314,6 +318,14 @@ public class UserInterface extends JFrame {
                 JOptionPane.showMessageDialog(this,"You should record some audio before sending!");
             }
         };
+    }
+
+    private String formatText(ArrayList<String> text){
+        StringBuilder s = new StringBuilder();
+        for (String t : text){
+            s.append(t).append("\n");
+        }
+        return s.toString();
     }
 
 
