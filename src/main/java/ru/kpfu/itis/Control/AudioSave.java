@@ -14,13 +14,14 @@ import java.io.InputStream;
 public class AudioSave implements Runnable {
 
     private AudioInputStream ais;
-    private AudioFileFormat.Type type;  //audio file type - wav
+    private AudioFileFormat.Type type;
     private File outFile;               //output audio file
 
 
-    public AudioSave(String filePath, InputStream in, long length) throws IllegalFilePathException {
+    //type should be wav, because I haven't done it yet
+    public AudioSave(String filePath, InputStream in, AudioFileFormat.Type type, long length) throws IllegalFilePathException{
 
-        type = AudioFileFormat.Type.WAVE;
+        this.type = type;
         outFile = new File(filePath);
 
         if (!outFile.exists()){
@@ -32,6 +33,7 @@ public class AudioSave implements Runnable {
         }
 
         AudioFormat audioFormat = Utilities.getAudioFormat();
+
         ais = new AudioInputStream(in,audioFormat,length);
 
         Thread t = new Thread(this);

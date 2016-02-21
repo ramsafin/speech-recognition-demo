@@ -4,6 +4,10 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 
+/**
+ * This is Utilities class
+ * Here you should set up
+ */
 public class Utilities {
 
     /**
@@ -12,7 +16,7 @@ public class Utilities {
 
     private static final float SAMPLE_RATE = 16000.0f;
     private static final int SAMPLE_SIZE_IN_BITS = 16;
-    private static final int CHANNELS = 2;
+    private static final int CHANNELS = 1;
     private static final boolean SIGNED = true;
     private static final boolean BIG_ENDIAN = false;
 
@@ -22,13 +26,13 @@ public class Utilities {
     }
 
 
-
     /**
-     * Your mic device mixer
+     * Your microphones device mixer
      * default 1
+     * You should change it if need
      */
 
-    private static final int RECORD_MIXER_INFO = 1;  //в общем здесь ставь число от 0 до бесконечности пока не заработает play
+    private static final int RECORD_MIXER_INFO = 1;
 
     public static Mixer.Info getRecordMixerInfo(){
 
@@ -47,7 +51,6 @@ public class Utilities {
 
         return AudioSystem.getMixerInfo()[PLAY_MIXER_INFO];
     }
-
 
 
 }

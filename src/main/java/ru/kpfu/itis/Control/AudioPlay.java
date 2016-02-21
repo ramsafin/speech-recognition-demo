@@ -6,6 +6,10 @@ import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+/**
+ * This class plays audio
+ */
+
 public class AudioPlay implements Runnable {
 
 
@@ -15,7 +19,6 @@ public class AudioPlay implements Runnable {
 
 
     public AudioPlay(byte [] audioBytes) throws LineUnavailableException {
-
 
         audioFormat = Utilities.getAudioFormat();
 
@@ -28,6 +31,7 @@ public class AudioPlay implements Runnable {
         sourceDataLine = AudioSystem.getSourceDataLine(audioFormat,mixerInfo);
 
         sourceDataLine.open(audioFormat);
+
         sourceDataLine.start();
 
         Thread t = new Thread(this);
@@ -43,7 +47,6 @@ public class AudioPlay implements Runnable {
 
         byte buffer[] = new byte[(int) audioFormat.getSampleRate() * audioFormat.getFrameSize()];
 
-
         try {
 
             int count;
@@ -58,7 +61,6 @@ public class AudioPlay implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         sourceDataLine.drain();
 
