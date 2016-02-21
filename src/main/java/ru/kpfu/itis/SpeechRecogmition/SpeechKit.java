@@ -1,12 +1,20 @@
 package ru.kpfu.itis.SpeechRecogmition;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import ru.kpfu.itis.Exceptions.RecognitionSpeechException;
 import ru.kpfu.itis.Exceptions.TextRecognitionException;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class SpeechKit {
 
@@ -30,7 +38,7 @@ public class SpeechKit {
      * @throws IOException
      */
 
-    public static StringBuilder sendPOST(byte[] bytes) throws RecognitionSpeechException {
+    public static ArrayList<String> sendPOST(byte[] bytes) throws RecognitionSpeechException {
 
         try{
 
@@ -65,10 +73,10 @@ public class SpeechKit {
                 String s;
                 StringBuilder sb = new StringBuilder();
                 while ((s = reader.readLine()) != null){
-                    System.out.println(s);
                     sb.append(s);
                 }
-                return sb;
+
+                return getInternalXMLText(sb);
             }
 
         }catch (Exception e){
@@ -117,6 +125,37 @@ public class SpeechKit {
         }catch (Exception e){
             throw new TextRecognitionException(e.getMessage());
         }
+    }
+
+    private static String expression = "//recognitionResults";
+
+    private static ArrayList<String> getInternalXMLText(StringBuilder xml) throws RecognitionSpeechException {
+
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        try {
+            ByteArrayInputStream in = new ByteArrayInputStream(xml.toString().getBytes("UTF-8"));
+
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document document = builder.parse(in);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xPath = xPathFactory.newXPath();
+            XPathExpression expression = xPath.compile(SpeechKit.expression);
+
+            NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                arrayList.add(nodeList.item(i).getTextContent());
+            }
+
+        } catch (ParserConfigurationException | XPathExpressionException | SAXException | IOException e) {
+            throw new RecognitionSpeechException(e.getMessage());
+        }
+
+
+        return arrayList;
     }
 
 }

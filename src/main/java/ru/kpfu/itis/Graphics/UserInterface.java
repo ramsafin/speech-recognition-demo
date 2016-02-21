@@ -4,6 +4,7 @@ import ru.kpfu.itis.Control.AudioCapture;
 import ru.kpfu.itis.Control.AudioPlay;
 import ru.kpfu.itis.Control.AudioSave;
 import ru.kpfu.itis.Exceptions.IllegalFilePathException;
+import ru.kpfu.itis.Exceptions.RecognitionSpeechException;
 import ru.kpfu.itis.Exceptions.TextRecognitionException;
 import ru.kpfu.itis.SpeechRecogmition.SpeechKit;
 import ru.kpfu.itis.Utilities.Utilities;
@@ -47,6 +48,8 @@ public class UserInterface extends JFrame {
     private JComboBox<Mixer.Info> audioInfo;
     private JPanel panel;
 
+    //recognition
+    private JButton recognizeBtn;
 
 
 
@@ -188,6 +191,9 @@ public class UserInterface extends JFrame {
         stopBtn = new JButton("stop");
         playBtn = new JButton("play");
         saveBtn = new JButton("save");
+        recognizeBtn = new JButton("recognize");
+
+
 
         startBtn.setEnabled(true);
         stopBtn.setEnabled(false);
@@ -204,6 +210,24 @@ public class UserInterface extends JFrame {
         playBtn.addActionListener(getPlayListener());
         saveBtn.addActionListener(getSaveListener());
 
+        recognizeBtn.addActionListener(e->{
+            byte[] data = audioCapture.getAudioBytes();
+            if (data.length > 0){
+
+                try {
+                    ArrayList<String> recText = SpeechKit.sendPOST(data);
+                    JOptionPane.showMessageDialog(this,recText,"recognized text",JOptionPane.INFORMATION_MESSAGE);
+
+                } catch (RecognitionSpeechException e1) {
+                    JOptionPane.showMessageDialog(this,e1.getMessage());
+                    e1.printStackTrace();
+                }
+
+            }else {
+                JOptionPane.showMessageDialog(this,"You should record some audio before sending!");
+            }
+        });
+
 
         recordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,20));
 
@@ -211,8 +235,9 @@ public class UserInterface extends JFrame {
         recordPanel.add(stopBtn);
         recordPanel.add(playBtn);
         recordPanel.add(saveBtn);
+        recordPanel.add(recognizeBtn);
 
-        pane.addTab("recording and saving",recordPanel);
+        pane.addTab("Recording - Saving - Recognition",recordPanel);
     }
 
 
