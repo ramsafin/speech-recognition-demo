@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class SpeechKit {
 
     //my own key that's why you should use it carefully
-    private static final String KEY = "f755d5ff-a1f0-47d2-b44a-233da815834c";
+    private static String KEY;
 
     //this is random hex
     private static final String UUID = "01ae13cb744628b58fb536d496daa1e6";
@@ -31,6 +31,10 @@ public class SpeechKit {
     private static final String SpeechRecognitionURI = "https://asr.yandex.net/asr_xml?";
 
 
+    public static void setKEY(String KEY) {
+        SpeechKit.KEY = KEY;
+    }
+
     /**
      * Sends post to the yandex and it will return xml with recognition results
      * @param bytes - audio bytes for sending
@@ -41,6 +45,10 @@ public class SpeechKit {
     public static ArrayList<String> sendPOST(byte[] bytes) throws RecognitionSpeechException {
 
         try{
+
+            if(KEY == null || KEY.length() <= 0){
+                throw new RecognitionSpeechException("Key is not setting up!");
+            }
 
             String params = "key="+KEY+"&uuid="+UUID+"&topic="+TOPIC;
 
@@ -116,8 +124,9 @@ public class SpeechKit {
 
         try{
 
-            System.out.println(emotion);
-            System.out.println(speaker);
+            if(KEY == null || KEY.length() <= 0){
+                throw new TextRecognitionException("Key is not setting up!");
+            }
 
             String text = URLEncoder.encode(textToSend,"UTF8");
 

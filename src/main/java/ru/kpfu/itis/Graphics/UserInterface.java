@@ -50,9 +50,13 @@ public class UserInterface extends JFrame {
     private JPanel audioPanel;
     private JComboBox<Mixer.Info> micInfo;
     private JComboBox<Mixer.Info> audioInfo;
-
-
     private JPanel panel;
+
+
+    //key
+    private JPanel keySettingPanel;
+    private JTextArea keyTextArea;
+    private JButton changeKey;
 
 
     public UserInterface() throws LineUnavailableException {
@@ -65,12 +69,42 @@ public class UserInterface extends JFrame {
 
         pane = new JTabbedPane();
 
+        initKeyPanel();
         initSettingPanel();
         initRecordPanel();
         initTextPanel();
 
         this.add(pane);
         this.setVisible(true);
+    }
+
+
+    private ActionListener getChangeKeyListener(){
+        return e->{
+            String s = JOptionPane.showInputDialog(this,"Enter your SpeechKit API KEY");
+            if (s == null || s.length() <= 0){
+                return;
+            }
+            SpeechKit.setKEY(s);
+            keyTextArea.setText(s);
+        };
+    }
+
+    private void initKeyPanel(){
+        keySettingPanel = new JPanel(new BorderLayout(20,20));
+
+        JPanel center = new JPanel();
+
+        keyTextArea = new JTextArea(6,32);
+        keyTextArea.setEditable(false);
+
+        changeKey.addActionListener(getChangeKeyListener());
+
+        center.add(keyTextArea,BorderLayout.CENTER);
+        center.add(changeKey,BorderLayout.SOUTH);
+
+        keySettingPanel.add(center,BorderLayout.CENTER);
+        pane.addTab("SpeechKit API's key",keySettingPanel);
     }
 
 
@@ -211,7 +245,7 @@ public class UserInterface extends JFrame {
                 new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());
 
             } catch (TextRecognitionException | LineUnavailableException e1) {
-                JOptionPane.showMessageDialog(this,e1.getMessage());
+                JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
         };
@@ -271,7 +305,7 @@ public class UserInterface extends JFrame {
                     JOptionPane.showMessageDialog(this,recText,"recognized text",JOptionPane.INFORMATION_MESSAGE);
 
                 } catch (RecognitionSpeechException e1) {
-                    JOptionPane.showMessageDialog(this,e1.getMessage());
+                    JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
 
@@ -293,7 +327,7 @@ public class UserInterface extends JFrame {
                 System.out.println(micInfo.getSelectedItem().toString());
                 audioCapture = new AudioCapture((Mixer.Info) micInfo.getSelectedItem());
             } catch (LineUnavailableException e1) {
-                JOptionPane.showMessageDialog(this,e1.getMessage());
+                JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
         };
@@ -308,7 +342,7 @@ public class UserInterface extends JFrame {
                 audioPlay = new AudioPlay(audioCapture.getAudioBytes(), (Mixer.Info) audioInfo.getSelectedItem());
 
             } catch (LineUnavailableException e1) {
-                JOptionPane.showMessageDialog(this,e1.getMessage());
+                JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
 
@@ -329,7 +363,7 @@ public class UserInterface extends JFrame {
                 audioSave = new AudioSave(path,in, AudioFileFormat.Type.WAVE,length);
 
             } catch (IllegalFilePathException e1) {
-                JOptionPane.showMessageDialog(this,e1.getMessage());
+                JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
             JOptionPane.showMessageDialog(this,"The music has been saved!");
