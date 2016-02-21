@@ -4,7 +4,7 @@
 
   <groupId>ru..kpfu.itis</groupId>
   <artifactId>speechRecognition</artifactId>
-  <version>speechKitTool1.0</version>
+  <version>speechKitTool1.4</version>
   <packaging>jar</packaging>
 
   <name>speechRecognition</name>
