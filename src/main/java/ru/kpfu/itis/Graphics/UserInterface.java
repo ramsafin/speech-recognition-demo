@@ -325,7 +325,6 @@ public class UserInterface extends JFrame {
             saveBtn.setEnabled(false);
 
             try {
-                System.out.println(micInfo.getSelectedItem().toString());
                 audioCapture = new AudioCapture((Mixer.Info) micInfo.getSelectedItem());
             } catch (LineUnavailableException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
