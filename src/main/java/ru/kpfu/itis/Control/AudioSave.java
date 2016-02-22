@@ -26,13 +26,6 @@ public class AudioSave implements Runnable {
         this.type = type;
         outFile = file;
 
-        if (!outFile.canWrite()){
-            boolean f = outFile.setWritable(true);
-            if (!f){
-                throw new AudioSaveException("Can't write to this file!");
-            }
-        }
-
         AudioFormat audioFormat = Utilities.getAudioFormat();
 
         ais = new AudioInputStream(in,audioFormat,length);
