@@ -119,7 +119,7 @@ public class UserInterface extends JFrame {
         initMic();
         initAudio();
 
-        pane.addTab("Setting",panel);
+        pane.addTab("Settings",panel);
     }
 
 
@@ -219,7 +219,7 @@ public class UserInterface extends JFrame {
         textAudioPanel.add(p,BorderLayout.CENTER);
 
 
-        pane.addTab("listen text",textAudioPanel);
+        pane.addTab("Text Recognition",textAudioPanel);
     }
 
 
@@ -292,7 +292,7 @@ public class UserInterface extends JFrame {
         recordPanel.add(saveBtn);
         recordPanel.add(recognizeBtn);
 
-        pane.addTab("Recording - Saving - Recognition",recordPanel);
+        pane.addTab("Speech Recognition",recordPanel);
     }
 
 
