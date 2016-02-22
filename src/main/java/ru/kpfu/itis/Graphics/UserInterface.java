@@ -245,7 +245,7 @@ public class UserInterface extends JFrame {
                 //waiting for the audio bytes
                 byte [] bytes = SpeechKit.sendGET(text);
 
-                new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());
+                audioPlay = new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());
 
             } catch (TextRecognitionException | AudioPlayException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
