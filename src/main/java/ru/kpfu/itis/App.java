@@ -6,8 +6,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 
 public class App {
-
-    public static void main( String[] args )  {
+    public static void main( String[] args ) {
 
         SwingUtilities.invokeLater(()->{
             try {
@@ -16,6 +15,5 @@ public class App {
                 e.printStackTrace();
             }
         });
-
     }
 }

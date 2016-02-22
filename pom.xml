@@ -15,6 +15,14 @@
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.sarxos</groupId>
+            <artifactId>webcam-capture</artifactId>
+            <version>0.3.10</version>
+        </dependency>
+    </dependencies>
+
 
     <build>
         <plugins>
