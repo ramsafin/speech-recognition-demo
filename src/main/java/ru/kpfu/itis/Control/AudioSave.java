@@ -1,6 +1,6 @@
 package ru.kpfu.itis.Control;
 
-import ru.kpfu.itis.Exceptions.IllegalFilePathException;
+import ru.kpfu.itis.Exceptions.AudioSaveException;
 import ru.kpfu.itis.Utilities.Utilities;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -13,22 +13,27 @@ import java.io.InputStream;
 
 public class AudioSave implements Runnable {
 
+    private boolean isSave;
+
     private AudioInputStream ais;
     private AudioFileFormat.Type type;
     private File outFile;               //output audio file
 
 
     //type should be wav, because I haven't done it yet
-    public AudioSave(String filePath, InputStream in, AudioFileFormat.Type type, long length) throws IllegalFilePathException{
+    public AudioSave(String filePath, InputStream in, AudioFileFormat.Type type, long length) throws AudioSaveException {
 
         this.type = type;
         outFile = new File(filePath);
 
         if (!outFile.exists()){
             try {
-                outFile.createNewFile();
+                boolean f = outFile.createNewFile();
+                if (!f){
+                    throw new AudioSaveException("Can't create file in this directory!");
+                }
             } catch (IOException e) {
-                throw new IllegalFilePathException("File path is not illegal!");
+                throw new AudioSaveException("File path is not illegal!");
             }
         }
 
@@ -36,17 +41,25 @@ public class AudioSave implements Runnable {
 
         ais = new AudioInputStream(in,audioFormat,length);
 
+        isSave = true;
+
         Thread t = new Thread(this);
         t.start();
     }
 
+
+    public boolean isSave() {
+        return isSave;
+    }
 
     @Override
     public void run() {
 
         try {
             AudioSystem.write(ais,type,outFile);
+            isSave = false;
         } catch (IOException e) {
+            isSave = false;
             e.printStackTrace();
         }
 

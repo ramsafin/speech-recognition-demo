@@ -1,5 +1,6 @@
 package ru.kpfu.itis.Control;
 
+import ru.kpfu.itis.Exceptions.AudioCaptureException;
 import ru.kpfu.itis.Utilities.Utilities;
 
 import javax.sound.sampled.*;
@@ -20,20 +21,26 @@ public class AudioCapture implements Runnable {
         return isCapture;
     }
 
-    public AudioCapture(Mixer.Info info) throws LineUnavailableException {
+    public AudioCapture(Mixer.Info info) throws AudioCaptureException {
 
-        audioFormat = Utilities.getAudioFormat();
-        isCapture = true;
-        targetDataLine = AudioSystem.getTargetDataLine(audioFormat, info);
-        targetDataLine.open(audioFormat);
-        targetDataLine.start();
+        try{
 
-        buffer = new byte[(int) (audioFormat.getFrameSize() * audioFormat.getSampleRate())];
+            audioFormat = Utilities.getAudioFormat();
+            isCapture = true;
+            targetDataLine = AudioSystem.getTargetDataLine(audioFormat, info);
+            targetDataLine.open(audioFormat);
+            targetDataLine.start();
 
-        out = new ByteArrayOutputStream();
+            buffer = new byte[(int) (audioFormat.getFrameSize() * audioFormat.getSampleRate())];
 
-        Thread t = new Thread(this);
-        t.start();
+            out = new ByteArrayOutputStream();
+
+            Thread t = new Thread(this);
+            t.start();
+        }catch (LineUnavailableException e){
+            throw new AudioCaptureException("Can't capture audio : " + e.getMessage());
+        }
+
 
     }
 

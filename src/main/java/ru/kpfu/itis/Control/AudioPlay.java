@@ -1,5 +1,6 @@
 package ru.kpfu.itis.Control;
 
+import ru.kpfu.itis.Exceptions.AudioPlayException;
 import ru.kpfu.itis.Utilities.Utilities;
 
 import javax.sound.sampled.*;
@@ -12,33 +13,44 @@ import java.io.IOException;
 
 public class AudioPlay implements Runnable {
 
+    private boolean isAudioPlay;
+
 
     private AudioInputStream audioInputStream;
     private AudioFormat audioFormat;
     private SourceDataLine sourceDataLine;
 
 
-    public AudioPlay(byte [] audioBytes, Mixer.Info info) throws LineUnavailableException {
+    public AudioPlay(byte [] audioBytes, Mixer.Info info) throws AudioPlayException {
 
-        audioFormat = Utilities.getAudioFormat();
+        try {
 
-        int length = audioBytes.length/audioFormat.getFrameSize();
+            audioFormat = Utilities.getAudioFormat();
 
-        audioInputStream = new AudioInputStream(new ByteArrayInputStream(audioBytes),audioFormat,length);
+            int length = audioBytes.length/audioFormat.getFrameSize();
 
-        sourceDataLine = AudioSystem.getSourceDataLine(audioFormat,info);
+            audioInputStream = new AudioInputStream(new ByteArrayInputStream(audioBytes),audioFormat,length);
 
-        sourceDataLine.open(audioFormat);
+            sourceDataLine = AudioSystem.getSourceDataLine(audioFormat,info);
 
-        sourceDataLine.start();
+            sourceDataLine.open(audioFormat);
 
-        Thread t = new Thread(this);
-        t.start();
+            sourceDataLine.start();
+
+            isAudioPlay = true;
+
+            Thread t = new Thread(this);
+            t.start();
+
+        }catch (LineUnavailableException e){
+            throw new AudioPlayException("Can't play audio : " + e.getMessage());
+        }
     }
 
 
-
-
+    public boolean isAudioPlay() {
+        return isAudioPlay;
+    }
 
     @Override
     public void run() {
@@ -48,7 +60,7 @@ public class AudioPlay implements Runnable {
         try {
 
             int count;
-            while ((count = audioInputStream.read(buffer, 0, buffer.length)) != -1) {
+            while ((count = audioInputStream.read(buffer, 0, buffer.length)) > 0) {
 
                 if (count > 0) {
                     sourceDataLine.write(buffer, 0, count);
@@ -56,7 +68,11 @@ public class AudioPlay implements Runnable {
 
             }
 
+            isAudioPlay = false;
+
+
         } catch (IOException e) {
+            isAudioPlay = false;
             e.printStackTrace();
         }
 

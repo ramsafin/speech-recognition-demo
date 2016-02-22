@@ -3,9 +3,7 @@ package ru.kpfu.itis.Graphics;
 import ru.kpfu.itis.Control.AudioCapture;
 import ru.kpfu.itis.Control.AudioPlay;
 import ru.kpfu.itis.Control.AudioSave;
-import ru.kpfu.itis.Exceptions.IllegalFilePathException;
-import ru.kpfu.itis.Exceptions.RecognitionSpeechException;
-import ru.kpfu.itis.Exceptions.TextRecognitionException;
+import ru.kpfu.itis.Exceptions.*;
 import ru.kpfu.itis.SpeechRecogmition.SpeechKit;
 import ru.kpfu.itis.Utilities.Utilities;
 
@@ -32,7 +30,7 @@ public class UserInterface extends JFrame {
 
 
     //record panel
-    private JButton startBtn;
+    private JButton captureBtn;
     private JButton stopBtn;
     private JButton playBtn;
     private JButton saveBtn;
@@ -245,7 +243,7 @@ public class UserInterface extends JFrame {
 
                 new AudioPlay(bytes, (Mixer.Info) audioInfo.getSelectedItem());
 
-            } catch (TextRecognitionException | LineUnavailableException e1) {
+            } catch (TextRecognitionException | AudioPlayException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
@@ -256,14 +254,14 @@ public class UserInterface extends JFrame {
 
     private void initRecordPanel(){
 
-        startBtn = new JButton("start");
+        captureBtn = new JButton("record");
         stopBtn = new JButton("stop");
         playBtn = new JButton("play");
         saveBtn = new JButton("save");
         recognizeBtn = new JButton("recognize");
 
 
-        startBtn.setEnabled(true);
+        captureBtn.setEnabled(true);
         stopBtn.setEnabled(false);
         playBtn.setEnabled(false);
         saveBtn.setEnabled(false);
@@ -271,9 +269,9 @@ public class UserInterface extends JFrame {
         saveBtn.setPreferredSize(new Dimension(60,40));
         playBtn.setPreferredSize(new Dimension(60,40));
         stopBtn.setPreferredSize(new Dimension(60,40));
-        startBtn.setPreferredSize(new Dimension(60,40));
+        captureBtn.setPreferredSize(new Dimension(60,40));
 
-        startBtn.addActionListener(getStartListener());
+        captureBtn.addActionListener(getStartListener());
         stopBtn.addActionListener(getStopListener());
         playBtn.addActionListener(getPlayListener());
         saveBtn.addActionListener(getSaveListener());
@@ -283,7 +281,7 @@ public class UserInterface extends JFrame {
 
         recordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,20));
 
-        recordPanel.add(startBtn);
+        recordPanel.add(captureBtn);
         recordPanel.add(stopBtn);
         recordPanel.add(playBtn);
         recordPanel.add(saveBtn);
@@ -336,14 +334,23 @@ public class UserInterface extends JFrame {
 
     private ActionListener getStartListener(){
         return e->{
-            startBtn.setEnabled(false);
+
+            if (audioPlay != null && audioPlay.isAudioPlay()){
+                return;
+            }
+
+            if (audioSave != null && audioSave.isSave()){
+                return;
+            }
+
+            captureBtn.setEnabled(false);
             playBtn.setEnabled(false);
             stopBtn.setEnabled(true);
             saveBtn.setEnabled(false);
 
             try {
                 audioCapture = new AudioCapture((Mixer.Info) micInfo.getSelectedItem());
-            } catch (LineUnavailableException e1) {
+            } catch (AudioCaptureException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
@@ -355,10 +362,11 @@ public class UserInterface extends JFrame {
     private ActionListener getPlayListener(){
         return e->{
 
+
             try {
                 audioPlay = new AudioPlay(audioCapture.getAudioBytes(), (Mixer.Info) audioInfo.getSelectedItem());
 
-            } catch (LineUnavailableException e1) {
+            } catch (AudioPlayException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
@@ -379,10 +387,11 @@ public class UserInterface extends JFrame {
                 }
                 audioSave = new AudioSave(path,in, AudioFileFormat.Type.WAVE,length);
 
-            } catch (IllegalFilePathException e1) {
+            } catch (AudioSaveException e1) {
                 JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
+
             JOptionPane.showMessageDialog(this,"The music has been saved!");
 
         };
@@ -392,11 +401,12 @@ public class UserInterface extends JFrame {
 
     private ActionListener getStopListener(){
         return e->{
-            startBtn.setEnabled(true);
+            captureBtn.setEnabled(true);
             stopBtn.setEnabled(false);
             playBtn.setEnabled(true);
             saveBtn.setEnabled(true);
 
+            //stop capturing
             audioCapture.setCapture(false);
         };
     }
