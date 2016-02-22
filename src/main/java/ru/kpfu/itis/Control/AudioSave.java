@@ -21,19 +21,15 @@ public class AudioSave implements Runnable {
 
 
     //type should be wav, because I haven't done it yet
-    public AudioSave(String filePath, InputStream in, AudioFileFormat.Type type, long length) throws AudioSaveException {
+    public AudioSave(File file, InputStream in, AudioFileFormat.Type type, long length) throws AudioSaveException {
 
         this.type = type;
-        outFile = new File(filePath);
+        outFile = file;
 
-        if (!outFile.exists()){
-            try {
-                boolean f = outFile.createNewFile();
-                if (!f){
-                    throw new AudioSaveException("Can't create file in this directory!");
-                }
-            } catch (IOException e) {
-                throw new AudioSaveException("File path is not illegal!");
+        if (!outFile.canWrite()){
+            boolean f = outFile.setWritable(true);
+            if (!f){
+                throw new AudioSaveException("Can't write to this file!");
             }
         }
 
@@ -46,6 +42,7 @@ public class AudioSave implements Runnable {
         Thread t = new Thread(this);
         t.start();
     }
+
 
 
     public boolean isSave() {

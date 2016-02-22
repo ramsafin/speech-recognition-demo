@@ -57,6 +57,10 @@ public class UserInterface extends JFrame {
     private JButton changeKey;
 
 
+    //fileChooser
+    private JFileChooser fileChooser;
+
+
     public UserInterface() throws LineUnavailableException {
 
         super("Audio panel");
@@ -259,7 +263,8 @@ public class UserInterface extends JFrame {
         playBtn = new JButton("play");
         saveBtn = new JButton("save");
         recognizeBtn = new JButton("recognize");
-
+        fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(false);
 
         captureBtn.setEnabled(true);
         stopBtn.setEnabled(false);
@@ -380,19 +385,18 @@ public class UserInterface extends JFrame {
 
             long length = audioCapture.getLength();
             ByteArrayInputStream in = new ByteArrayInputStream(audioCapture.getAudioBytes());
-            try {
-                String path = JOptionPane.showInputDialog(this,"Enter file path to save");
-                if (path == null|| path.equals("")){
-                    return;
+
+            int status = fileChooser.showSaveDialog(this);
+            if (status == JFileChooser.APPROVE_OPTION){
+                try {
+                    audioSave = new AudioSave(fileChooser.getSelectedFile(),in, AudioFileFormat.Type.WAVE,length);
+                    JOptionPane.showMessageDialog(this,"The music has been saved!");
+
+                } catch (AudioSaveException e1) {
+                    JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
+                    e1.printStackTrace();
                 }
-                audioSave = new AudioSave(path,in, AudioFileFormat.Type.WAVE,length);
-
-            } catch (AudioSaveException e1) {
-                JOptionPane.showMessageDialog(this,e1.getMessage(),"exception",JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
             }
-
-            JOptionPane.showMessageDialog(this,"The music has been saved!");
 
         };
     }
