@@ -1,6 +1,5 @@
 package ru.kpfu.itis.Control;
 
-import ru.kpfu.itis.Exceptions.AudioSaveException;
 import ru.kpfu.itis.Utilities.Utilities;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -17,25 +16,23 @@ public class AudioSave implements Runnable {
 
     private AudioInputStream ais;
     private AudioFileFormat.Type type;
-    private File outFile;               //output audio file
+    private File outFile; //output audio file
 
 
-    //type should be wav, because I haven't done it yet
-    public AudioSave(File file, InputStream in, AudioFileFormat.Type type, long length) throws AudioSaveException {
+    public AudioSave(File file, InputStream in, AudioFileFormat.Type type, long length) {
 
         this.type = type;
         outFile = file;
 
         AudioFormat audioFormat = Utilities.getAudioFormat();
 
-        ais = new AudioInputStream(in,audioFormat,length);
+        ais = new AudioInputStream(in, audioFormat, length);
 
         isSave = true;
 
         Thread t = new Thread(this);
         t.start();
     }
-
 
 
     public boolean isSave() {
@@ -46,7 +43,7 @@ public class AudioSave implements Runnable {
     public void run() {
 
         try {
-            AudioSystem.write(ais,type,outFile);
+            AudioSystem.write(ais, type, outFile);
             isSave = false;
         } catch (IOException e) {
             isSave = false;

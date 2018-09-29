@@ -18,9 +18,9 @@ public class Utilities {
     private static boolean SIGNED = true;
     private static boolean BIG_ENDIAN = false;
 
-    public static AudioFormat getAudioFormat(){
+    public static AudioFormat getAudioFormat() {
 
-        return new AudioFormat(SAMPLE_RATE,SAMPLE_SIZE_IN_BITS,CHANNELS,SIGNED,BIG_ENDIAN);
+        return new AudioFormat(SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, SIGNED, BIG_ENDIAN);
     }
 
 }

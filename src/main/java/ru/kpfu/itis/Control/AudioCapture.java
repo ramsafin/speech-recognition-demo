@@ -13,7 +13,7 @@ public class AudioCapture implements Runnable {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
 
-    private byte [] buffer;
+    private byte[] buffer;
     private ByteArrayOutputStream out; //Thread safe stream
 
 
@@ -23,7 +23,7 @@ public class AudioCapture implements Runnable {
 
     public AudioCapture(Mixer.Info info) throws AudioCaptureException {
 
-        try{
+        try {
 
             audioFormat = Utilities.getAudioFormat();
             isCapture = true;
@@ -37,19 +37,17 @@ public class AudioCapture implements Runnable {
 
             Thread t = new Thread(this);
             t.start();
-        }catch (LineUnavailableException e){
+        } catch (LineUnavailableException e) {
             throw new AudioCaptureException("Can't capture audio : " + e.getMessage());
         }
-
-
     }
 
 
-    public byte[] getAudioBytes(){
+    public byte[] getAudioBytes() {
         return out.toByteArray();
     }
 
-    public long getLength(){
+    public long getLength() {
 
         return out.size();
     }
@@ -60,10 +58,10 @@ public class AudioCapture implements Runnable {
     }
 
 
-    private void writeData(){
-        int count = targetDataLine.read(buffer,0,buffer.length);
-        if (count > 0){
-            out.write(buffer,0,count);
+    private void writeData() {
+        int count = targetDataLine.read(buffer, 0, buffer.length);
+        if (count > 0) {
+            out.write(buffer, 0, count);
         }
     }
 
@@ -71,12 +69,10 @@ public class AudioCapture implements Runnable {
     @Override
     public void run() {
 
-        while (isCapture){
+        while (isCapture) {
 
             writeData();
         }
-
     }
-
 
 }

@@ -16,27 +16,27 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class SpeechKit {
+public class SpeechKitService {
 
-    //my own key that's why you should use it carefully
-    private static String KEY;
+    private static String API_KEY;
 
-    //this is random hex
+    // random
     private static final String UUID = "01ae13cb744628b58fb536d496daa1e6";
 
-    //may be music,maps,notes,etc. see in yandex.ru
+    // may be music,maps,notes,etc. see in yandex.ru
     private static final String TOPIC = "notes";
 
     //URI for speech recognition
     private static final String SpeechRecognitionURI = "https://asr.yandex.net/asr_xml?";
 
 
-    public static void setKEY(String KEY) {
-        SpeechKit.KEY = KEY;
+    public static void setApiKey(String apiKey) {
+        SpeechKitService.API_KEY = apiKey;
     }
 
     /**
      * Sends post to the yandex and it will return xml with recognition results
+     *
      * @param bytes - audio bytes for sending
      * @return StringBuilder - xml with results
      * @throws RecognitionSpeechException
@@ -44,15 +44,15 @@ public class SpeechKit {
 
     public static ArrayList<String> sendPOST(byte[] bytes) throws RecognitionSpeechException {
 
-        try{
+        try {
 
-            if(KEY == null || KEY.length() <= 0){
+            if (API_KEY == null || API_KEY.length() <= 0) {
                 throw new RecognitionSpeechException("Key is not setting up!");
             }
 
-            String params = "key="+KEY+"&uuid="+UUID+"&topic="+TOPIC;
+            String params = "key=" + API_KEY + "&uuid=" + UUID + "&topic=" + TOPIC;
 
-            String uri = SpeechRecognitionURI+params;
+            String uri = SpeechRecognitionURI + params;
 
             URL url = new URL(uri);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -60,34 +60,34 @@ public class SpeechKit {
 
             conn.setRequestMethod("POST");
 
-            conn.addRequestProperty("Content-Type","audio/x-pcm;bit=16;rate=16000");   //see yandex.ru the advice this
-            conn.addRequestProperty("Host","asr.yandex.net");
+            conn.addRequestProperty("Content-Type", "audio/x-pcm;bit=16;rate=16000");   //see yandex.ru the advice this
+            conn.addRequestProperty("Host", "asr.yandex.net");
             conn.setDoOutput(true);
 
             //writing audio data
-            try(DataOutputStream out = new DataOutputStream(conn.getOutputStream())){
-                    out.write(bytes,0,bytes.length);
+            try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
+                out.write(bytes, 0, bytes.length);
             } catch (IOException e) {
                 throw new RecognitionSpeechException(e.getMessage());
             }
 
             int responseCode = conn.getResponseCode();
 
-            if (responseCode != 200){
+            if (responseCode != 200) {
                 throw new RecognitionSpeechException("Can't send and recognize speech");
             }
 
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))){
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                 String s;
                 StringBuilder sb = new StringBuilder();
-                while ((s = reader.readLine()) != null){
+                while ((s = reader.readLine()) != null) {
                     sb.append(s);
                 }
 
                 return getInternalXMLText(sb);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RecognitionSpeechException(e.getMessage());
         }
     }
@@ -104,63 +104,58 @@ public class SpeechKit {
     private static String textRecognitionURI = "https://tts.voicetech.yandex.net/generate?";
 
 
-
-
     public static byte[] sendGET(String textToSend) throws TextRecognitionException {
 
-        try{
+        try {
 
-            if(KEY == null || KEY.length() <= 0){
+            if (API_KEY == null || API_KEY.length() <= 0) {
                 throw new TextRecognitionException("Key is not setting up!");
             }
 
-            String text = URLEncoder.encode(textToSend,"UTF8");
+            String text = URLEncoder.encode(textToSend, "UTF8");
 
-            String params = "text=\""+text+"\"&format="+format+"&speaker="+speaker+"&key="+KEY+"&emotion="+emotion+"&robot="+robot;
+            String params = "text=\"" + text + "\"&format=" + format + "&speaker=" + speaker + "&key=" + API_KEY + "&emotion=" + emotion + "&robot=" + robot;
 
-            URL url = new URL(textRecognitionURI+params);
+            URL url = new URL(textRecognitionURI + params);
 
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
 
-            byte [] buff = new byte[1024]; //buffer for reading bytes
+            byte[] buff = new byte[1024]; //buffer for reading bytes
 
-            try(ByteArrayOutputStream res = new ByteArrayOutputStream();
-                BufferedInputStream in = new BufferedInputStream(conn.getInputStream())
-            ){
+            try (ByteArrayOutputStream res = new ByteArrayOutputStream();
+                 BufferedInputStream in = new BufferedInputStream(conn.getInputStream())
+            ) {
                 int i;
-                while ( (i = in.read(buff,0,buff.length)) > 0){
-                    res.write(buff,0,i);
+                while ((i = in.read(buff, 0, buff.length)) > 0) {
+                    res.write(buff, 0, i);
                 }
                 return res.toByteArray();
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new TextRecognitionException(e.getMessage());
         }
     }
 
 
-
     public static void setSpeaker(String speaker) {
-        SpeechKit.speaker = speaker;
+        SpeechKitService.speaker = speaker;
     }
 
     public static String[] getSpeakers() {
-        return new String[]{"zahar","omazh","ermil","jane"};
+        return new String[]{"zahar", "omazh", "ermil", "jane"};
     }
 
     public static String[] getEmotions() {
-        return new String[]{"neutral","mixed","evil","good"};
+        return new String[]{"neutral", "mixed", "evil", "good"};
     }
 
     public static void setEmotion(String emotion) {
-        SpeechKit.emotion = emotion;
+        SpeechKitService.emotion = emotion;
     }
-
-
 
 
     private static String expression = "//recognitionResults/variant";
@@ -178,7 +173,7 @@ public class SpeechKit {
 
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
-            XPathExpression expression = xPath.compile(SpeechKit.expression);
+            XPathExpression expression = xPath.compile(SpeechKitService.expression);
 
             NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
 
