@@ -1,8 +1,15 @@
-# speechKit
+# Yandex Speech Kit Demo
 
-Программулина для записи, сохранения звука и воспроизведения текста.
-Программа написана в учебных целях (for educational purposes)
 
-#How to use
+A software with UI that enables to record your voice using mic and recognize sentences be means of Yandex Speech Kit.
 
-To use this app you should get yandex speechKit API key. That's all;
+## Features
+
+- UI with settings of speech recognition settings;
+- Record and play voice functionality;
+- Text scoring.
+
+
+## Notes
+
+The Yandex Speech Kit API key is required.
